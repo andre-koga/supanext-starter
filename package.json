@@ -8,6 +8,8 @@
         "dev:backend": "pnpm --filter backend dev",
         "build": "pnpm --filter frontend build",
         "start": "pnpm --filter frontend start",
+        "lint": "pnpm --filter frontend lint",
+        "typecheck": "pnpm --filter frontend typecheck",
         "supabase:start": "cd backend && supabase start",
         "supabase:stop": "cd backend && supabase stop",
         "supabase:status": "cd backend && supabase status"

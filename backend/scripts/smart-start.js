@@ -22,7 +22,7 @@ async function startSupabase() {
     try {
         // First, try to stop current project just in case
         try {
-            await runCommand('supabase stop --no-backup');
+            await runCommand('supabase stop');
         } catch (e) {
             // Ignore error if not running
         }
