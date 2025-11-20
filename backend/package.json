@@ -1,0 +1,17 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "supabase start",
+        "stop": "supabase stop",
+        "status": "supabase status",
+        "reset": "supabase db reset",
+        "migration:new": "supabase migration new",
+        "migration:up": "supabase migration up",
+        "gen:types": "supabase gen types typescript --local > ../frontend/lib/database.types.ts"
+    },
+    "devDependencies": {
+        "supabase": "^1.0.0"
+    }
+}
