@@ -1,7 +1,7 @@
 {
-    "name": "Yoga Practice & Wellness Tracker",
-    "short_name": "Yoga App",
-    "description": "A simple yoga practice and wellness tracker.",
+    "name": "Next.js PWA Starter",
+    "short_name": "PWA Starter",
+    "description": "A modern PWA starter with Next.js and Supabase authentication.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
