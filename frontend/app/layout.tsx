@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { PwaInit } from "@/components/pwa-init";
+import { AppShell } from "@/components/layout/AppShell";
 
 
 const defaultUrl = process.env.VERCEL_URL
@@ -43,7 +44,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <PwaInit />
-          {children}
+          <AppShell>{children}</AppShell>
         </ThemeProvider>
       </body>
     </html>

@@ -1,51 +1,135 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/server";
+import { RoutineCard } from "@/components/routine/RoutineCard";
+import { StretchCard } from "@/components/stretch/StretchCard";
+import { Button } from "@/components/ui/button";
+import { Tables } from "@/lib/database.types";
 import Link from "next/link";
+import { ArrowRight, Flame, Trophy, Calendar } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+
+  let presetRoutines: Tables<"routines">[] = [];
+  let stretches: Tables<"stretches">[] = [];
+
+  try {
+    // Fetch preset routines
+    const routinesResult = await supabase
+      .from("routines")
+      .select("*")
+      .eq("is_preset", true)
+      .limit(4);
+
+    if (routinesResult.error) {
+      console.error("Error fetching routines:", routinesResult.error);
+    } else {
+      presetRoutines = routinesResult.data || [];
+    }
+
+    // Fetch recent stretches
+    const stretchesResult = await supabase
+      .from("stretches")
+      .select("*")
+      .limit(4);
+
+    if (stretchesResult.error) {
+      console.error("Error fetching stretches:", stretchesResult.error);
+    } else {
+      stretches = stretchesResult.data || [];
+    }
+  } catch (error) {
+    console.error("Unexpected error:", error);
+  }
+
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
-        </div>
+    <div className="space-y-8">
+      {/* Header Section */}
+      <section className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Welcome Back! 👋</h1>
+        <p className="text-muted-foreground">
+          Ready to move your body? Let's get stretching.
+        </p>
+      </section>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
-      </div>
-    </main>
+      {/* Stats Overview (Placeholder) */}
+      <section className="grid grid-cols-3 gap-4">
+        <div className="rounded-xl border bg-card p-4 text-center shadow-sm">
+          <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600 dark:bg-orange-900/20">
+            <Flame className="h-4 w-4" />
+          </div>
+          <div className="text-2xl font-bold">0</div>
+          <div className="text-xs text-muted-foreground">Day Streak</div>
+        </div>
+        <div className="rounded-xl border bg-card p-4 text-center shadow-sm">
+          <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/20">
+            <Trophy className="h-4 w-4" />
+          </div>
+          <div className="text-2xl font-bold">0</div>
+          <div className="text-xs text-muted-foreground">Sessions</div>
+        </div>
+        <div className="rounded-xl border bg-card p-4 text-center shadow-sm">
+          <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/20">
+            <Calendar className="h-4 w-4" />
+          </div>
+          <div className="text-2xl font-bold">0m</div>
+          <div className="text-xs text-muted-foreground">Time Spent</div>
+        </div>
+      </section>
+
+      {/* Featured Routines */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Start a Routine</h2>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/routines">
+              View All <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {presetRoutines?.map((routine) => (
+            <Link key={routine.id} href={`/routines/${routine.id}`}>
+              <RoutineCard
+                name={routine.name}
+                description={routine.description}
+                difficulty={routine.difficulty || "beginner"}
+                duration={routine.total_duration || 0}
+                isPreset={routine.is_preset || false}
+              />
+            </Link>
+          ))}
+          {(!presetRoutines || presetRoutines.length === 0) && (
+            <div className="col-span-full py-8 text-center text-muted-foreground">
+              No routines found.
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Explore Stretches */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Explore Stretches</h2>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/explore">
+              View All <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {stretches?.map((stretch) => (
+            <Link key={stretch.id} href={`/stretches/${stretch.id}`}>
+              <StretchCard
+                name={stretch.name}
+                difficulty={stretch.difficulty}
+                duration={stretch.default_duration}
+                imageUrl={stretch.image_url || undefined}
+                targetMuscles={stretch.target_muscles}
+              />
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
