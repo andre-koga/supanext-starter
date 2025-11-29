@@ -1,7 +1,8 @@
 packages:
-  - 'frontend'
-  - 'backend'
+  - frontend
+  - backend
 
 onlyBuiltDependencies:
   - sharp
+  - supabase
   - unrs-resolver
