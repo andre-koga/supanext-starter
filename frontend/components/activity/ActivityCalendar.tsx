@@ -28,7 +28,7 @@ export function ActivityCalendar({ sessionDates }: ActivityCalendarProps) {
     };
 
     const modifiersClassNames = {
-        session: "bg-green-600 text-primary-foreground !rounded font-bold hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        session: "bg-green-600 text-primary-foreground rounded! font-bold hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
     };
 
     return (
